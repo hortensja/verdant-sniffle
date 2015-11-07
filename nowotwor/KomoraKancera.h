@@ -27,12 +27,21 @@ public:
 	void ustawI(int i);
 	void ustawJ(int j);
 
+	bool czySieRozrastaCzyNie();
+	bool czySiePrzerzucaCzyNie();
+
+	void ozyw(int i, int j, UniwersKancera &uniwers);
+	void ozywSie();
+	void przerzucSie(UniwersKancera &uniwers);
+	void rozrastajSie(UniwersKancera &uniwers);
 
 private:
 	Stan mStan;
 	double mCisnienie[3];
 	double mJedzonko;
 	double mParametry;
+
+	bool mOzywaj;
 
 	int mICzyliWspolrzednaPozioma, mJCzyliWspolrzednaPionowa;
 };
