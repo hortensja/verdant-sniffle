@@ -128,9 +128,9 @@ void KomoraKancera::ustawJ(int j)
 bool KomoraKancera::czySieRozrastaCzyNie()
 {
 	double randomJakis = fajnyRozkladPrawdopodobienstwa(mtJakis);
-	if (mJedzonko*randomJakis * 5 * (-(mCisnienie[2] + 0.30)*(mCisnienie[2] - 0.60)) > 0.66) {
+	//if (mJedzonko*randomJakis * 5 * (-(mCisnienie[2] + 0.30)*(mCisnienie[2] - 0.60)) > 0.66) {
 
-	//if (0.05*(1 - 0.01*mCzasZycia) + 0.2*mJedzonko*mJedzonko*mJedzonko + (-(mCisnienie[2] + 0.30)*(mCisnienie[2] - 0.60)) > 0.5*randomJakis) {
+	if (0.125*(-mCzasZycia/100 + 1)*(mCzasZycia/100 + 1) + 0.2*mJedzonko*mJedzonko*mJedzonko + (-(mCisnienie[2] + 0.30)*(mCisnienie[2] - 0.60)) > 1.7 * randomJakis) {
 		//std::cout << "Rozrastam sie ";
 		return true;
 	}
@@ -149,18 +149,18 @@ bool KomoraKancera::czySiePrzerzucaCzyNie()
 
 bool KomoraKancera::czyUmieraCzyNie(UniwersKancera &uniwers)
 {
-	double randomJakis = mniejFajnyRozkladPrawdopodobienstwa(mtJakis);
+	double randomJakis = fajnyRozkladPrawdopodobienstwa(mtJakis);
 	double czasZyciaWCzasie = mCzasZycia/100;
 	double iloscJedzonkaWZyciu = 1 / (1.1 + 2 * mJedzonko);
 	double iloscCisnieniaWEsilonOtoczneiu = mCisnienie[2]*mCisnienie[2];
 	double wspolczynnikZapelnienia = uniwers.wezLiczbeZywych() / (rozmiar*rozmiar);
 
 
-	double wspolczynnikUmarcia = (wspolczynnikZapelnienia + czasZyciaWCzasie + iloscJedzonkaWZyciu + 0.2 * iloscCisnieniaWEsilonOtoczneiu);
+	double wspolczynnikUmarcia = (0.75*wspolczynnikZapelnienia + 0.75*czasZyciaWCzasie + 2*iloscJedzonkaWZyciu + 0.5 * iloscCisnieniaWEsilonOtoczneiu);
 	
 	//std::cout << wspolczynnikUmarcia << std::endl;
 
-	if (wspolczynnikUmarcia > randomJakis / 2 + 0.4)
+	if (wspolczynnikUmarcia > randomJakis + 1.25)
 		return true;
 
 	return false;
@@ -170,7 +170,7 @@ void KomoraKancera::przerzucSie(UniwersKancera &uniwers)
 {
 	double randomJeszczeInniejszy = (mniejFajnyRozkladPrawdopodobienstwa(mtJakis) - 0.5)*0.25*rozmiar;
 	double randomJeszczeJeszczeInniejszy = (mniejFajnyRozkladPrawdopodobienstwa(mtJakis) - 0.5)*0.25*rozmiar;
-	std::cout << "Przerzucam sie na " << wezI() + randomJeszczeInniejszy << " , " << wezJ() + randomJeszczeJeszczeInniejszy << std::endl;
+	//std::cout << "Przerzucam sie na " << wezI() + randomJeszczeInniejszy << " , " << wezJ() + randomJeszczeJeszczeInniejszy << std::endl;
 	ozyw(wezI() + randomJeszczeInniejszy, wezJ() + randomJeszczeJeszczeInniejszy, uniwers);
 	
 }
@@ -189,7 +189,7 @@ void KomoraKancera::umrzyjSie(UniwersKancera & uniwers)
 {
 	mStan = NieZyje;
 	mCzasZycia = 0;
-	std::cout << "UNIERAM" << std::endl;
+	//std::cout << "UNIERAM" << std::endl;
 }
 
 void KomoraKancera::ozyw(int i, int j, UniwersKancera & uniwers)
