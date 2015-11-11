@@ -19,7 +19,8 @@ UniwersKancera::UniwersKancera()
 			mNowySwiat[i][j] = KomoraKancera(i,j);
 		}
 	}
-
+	mLiczbaMartwych = 0;
+	mLiczbaZywych = 0;
 }
 
 
@@ -38,18 +39,23 @@ void UniwersKancera::ustawKomoreUniwersu(int i, int j, KomoraKancera &komora)
 }
 
 void UniwersKancera::aktualizujUniwers() {
-	//@TOFIX
+	mLiczbaZywych = 0;
+	mLiczbaMartwych = 0;
+
 	for (int i = 0; i < rozmiar; i++) {
 		for (int j = 0; j < rozmiar; j++) {
-			mNowySwiat[i][j] = mSwiat[i][j].aktualizujKomore(*this);
-
+			mSwiat[i][j].aktualizujKomore(*this);
+			if (mSwiat[i][j].wezStan() == Zyje)
+				mLiczbaZywych++;
+			else if (mSwiat[i][j].wezStan() == NieZyje)
+				mLiczbaMartwych++;
 		}
 	}
 
 
-	KomoraKancera** t = mSwiat;
-	mSwiat = mNowySwiat;
-	mNowySwiat = t;
+	//KomoraKancera** t = mSwiat;
+	//mSwiat = mNowySwiat;
+	//mNowySwiat = t;
 
 
 }
@@ -106,6 +112,18 @@ void UniwersKancera::zapiszDoPlikaPPM(std::string nazwa, int numer)
 		}
 		file << std::endl;
 	}
+
+	file.close();
+}
+
+void UniwersKancera::zapiszDoPlikaTXT(std::string nzawa) {
+	
+	std::ofstream file(nzawa, std::ios::app|std::ios::ate);
+	
+	std::stringstream ss;
+	ss << mLiczbaZywych << ';' << mLiczbaMartwych << ';';
+
+	file << ss.str() << std::endl;
 
 	file.close();
 }
@@ -169,6 +187,11 @@ double UniwersKancera::liczPochodnaDrugiegoRzeduPoY(double I, double J, int t)
 		return (d1*(rzeczywistyI + rzeczywistyJ) + d2*(1 - rzeczywistyI + rzeczywistyJ) + d3*(1 - rzeczywistyJ + rzeczywistyI) + d4*(2 - rzeczywistyI - rzeczywistyJ)) / 4;
 	}
 	return 0;
+}
+
+double UniwersKancera::wezLiczbeZywych()
+{
+	return mLiczbaZywych;
 }
 
 

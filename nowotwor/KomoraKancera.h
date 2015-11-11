@@ -18,7 +18,7 @@ public:
 	KomoraKancera(int i, int j);
 	~KomoraKancera();
 
-	KomoraKancera aktualizujKomore(UniwersKancera &uniwers);
+	void aktualizujKomore(UniwersKancera &uniwers);
 	Stan wezStan();
 	double wezCisnienie(int t);
 	int wezI();
@@ -29,11 +29,13 @@ public:
 
 	bool czySieRozrastaCzyNie();
 	bool czySiePrzerzucaCzyNie();
+	bool czyUmieraCzyNie(UniwersKancera &uniwers);
 
 	void ozyw(int i, int j, UniwersKancera &uniwers);
 	void ozywSie();
 	void przerzucSie(UniwersKancera &uniwers);
 	void rozrastajSie(UniwersKancera &uniwers);
+	void umrzyjSie(UniwersKancera &uniwers);
 
 private:
 	Stan mStan;
@@ -42,6 +44,8 @@ private:
 	double mParametry;
 
 	bool mOzywaj;
+
+	int mCzasZycia;
 
 	int mICzyliWspolrzednaPozioma, mJCzyliWspolrzednaPionowa;
 };

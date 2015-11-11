@@ -20,6 +20,7 @@ int main() {
 	uniwers.ustawKomoreUniwersu(160, 8, kkk);
 	uniwers.ustawKomoreUniwersu(111, 189, kkk);
 	//while (1) 0;
+	system("del yoloyolo.txt");
 	for (size_t i = 0; i < 100; i++)
 	{
 		auto timeBefOne = std::chrono::high_resolution_clock::now();
@@ -29,7 +30,7 @@ int main() {
 		uniwers.aktualizujUniwers();
 		if(i%10==0)
 			uniwers.zapiszDoPlikaPPM("yoloyolo", i);
-
+		uniwers.zapiszDoPlikaTXT("yoloyolo.txt");
 
 
 

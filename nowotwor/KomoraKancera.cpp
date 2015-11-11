@@ -15,6 +15,7 @@ KomoraKancera::KomoraKancera()
 	mStan = Puste;
 	mJedzonko = 0.66;
 	mOzywaj = false;
+	mCzasZycia = 0;
 }
 
 KomoraKancera::KomoraKancera(Stan stan, double cisnienie)
@@ -25,6 +26,7 @@ KomoraKancera::KomoraKancera(Stan stan, double cisnienie)
 	mStan = stan;
 	mJedzonko = 0.66;
 	mOzywaj = false;
+	mCzasZycia = 0;
 }
 
 KomoraKancera::KomoraKancera(int i, int j)
@@ -39,29 +41,26 @@ KomoraKancera::KomoraKancera(int i, int j)
 	mStan = Puste;
 	mJedzonko = 0.66;
 	mOzywaj = false;
+	mCzasZycia = 0;
 }
 
 KomoraKancera::~KomoraKancera()
 {
 }
 
-KomoraKancera KomoraKancera::aktualizujKomore(UniwersKancera &uniwers)
+void KomoraKancera::aktualizujKomore(UniwersKancera &uniwers)
 {
 	double stala = 0.01;
 	double kappa = 0.11;
 	
 	ozywSie();
 
-	KomoraKancera temp;
-		temp.mStan = mStan;
-		temp.mJedzonko = mJedzonko + stala;
-		temp.mCisnienie[0] = mCisnienie[1];
-		temp.mCisnienie[1] = mCisnienie[2];
-		temp.mICzyliWspolrzednaPozioma = mICzyliWspolrzednaPozioma;
-		temp.mJCzyliWspolrzednaPionowa = mJCzyliWspolrzednaPionowa;
-		temp.mOzywaj = mOzywaj;
+	mJedzonko = mJedzonko + stala;
+	mJedzonko = mJedzonko > 1 ? 1 : mJedzonko;
 
-	temp.mJedzonko = temp.mJedzonko > 1 ? 1 : temp.mJedzonko;
+	mCisnienie[0] = mCisnienie[1];
+	mCisnienie[1] = mCisnienie[2];
+	
 	
 	double k1x = kappa * uniwers.liczPochodnaDrugiegoRzeduPoX(mICzyliWspolrzednaPozioma, mJCzyliWspolrzednaPionowa, 2);
 	double k2x = kappa * uniwers.liczPochodnaDrugiegoRzeduPoX(mICzyliWspolrzednaPozioma, mJCzyliWspolrzednaPionowa, 1);
@@ -77,20 +76,23 @@ KomoraKancera KomoraKancera::aktualizujKomore(UniwersKancera &uniwers)
 
 	double dk = dkx + dky;
 
-	temp.mCisnienie[2] = mCisnienie[2] + dk;
+	mCisnienie[2] = mCisnienie[1] + dk;
 
 	if (mStan == Zyje) {
+		mCzasZycia++;
+		mJedzonko -= 1.05*stala;
 		if (czySieRozrastaCzyNie()) {
 			rozrastajSie(uniwers);
 		}
 		if (czySiePrzerzucaCzyNie()) {
 			przerzucSie(uniwers);
 		}
+		if (czyUmieraCzyNie(uniwers)) {
+			umrzyjSie(uniwers);
+		}
 	}
 
 
-
-	return temp;
 }
 
 Stan KomoraKancera::wezStan()
@@ -127,7 +129,9 @@ bool KomoraKancera::czySieRozrastaCzyNie()
 {
 	double randomJakis = fajnyRozkladPrawdopodobienstwa(mtJakis);
 	if (mJedzonko*randomJakis * 5 * (-(mCisnienie[2] + 0.30)*(mCisnienie[2] - 0.60)) > 0.66) {
-		std::cout << "Rozrastam sie ";
+
+	//if (0.05*(1 - 0.01*mCzasZycia) + 0.2*mJedzonko*mJedzonko*mJedzonko + (-(mCisnienie[2] + 0.30)*(mCisnienie[2] - 0.60)) > 0.5*randomJakis) {
+		//std::cout << "Rozrastam sie ";
 		return true;
 	}
 	return false;
@@ -137,9 +141,28 @@ bool KomoraKancera::czySiePrzerzucaCzyNie()
 {
 	double randomInny = mniejFajnyRozkladPrawdopodobienstwa(mtJakis);
 	if (randomInny <= 0.001) {
-		std::cout << "Przerzucam sie ";
+		//std::cout << "Przerzucam sie ";
 		return true;
 	}
+	return false;
+}
+
+bool KomoraKancera::czyUmieraCzyNie(UniwersKancera &uniwers)
+{
+	double randomJakis = mniejFajnyRozkladPrawdopodobienstwa(mtJakis);
+	double czasZyciaWCzasie = mCzasZycia/100;
+	double iloscJedzonkaWZyciu = 1 / (1.1 + 2 * mJedzonko);
+	double iloscCisnieniaWEsilonOtoczneiu = mCisnienie[2]*mCisnienie[2];
+	double wspolczynnikZapelnienia = uniwers.wezLiczbeZywych() / (rozmiar*rozmiar);
+
+
+	double wspolczynnikUmarcia = (wspolczynnikZapelnienia + czasZyciaWCzasie + iloscJedzonkaWZyciu + 0.2 * iloscCisnieniaWEsilonOtoczneiu);
+	
+	//std::cout << wspolczynnikUmarcia << std::endl;
+
+	if (wspolczynnikUmarcia > randomJakis / 2 + 0.4)
+		return true;
+
 	return false;
 }
 
@@ -154,10 +177,19 @@ void KomoraKancera::przerzucSie(UniwersKancera &uniwers)
 
 void KomoraKancera::rozrastajSie(UniwersKancera & uniwers)
 {
-	ozyw(wezI() + 1, wezJ(), uniwers);
 	ozyw(wezI() - 1, wezJ(), uniwers);
-	ozyw(wezI(), wezJ() + 1, uniwers);
 	ozyw(wezI(), wezJ() - 1, uniwers);
+	
+	ozyw(wezI() + 1, wezJ(), uniwers);
+	ozyw(wezI(), wezJ() + 1, uniwers);
+
+}
+
+void KomoraKancera::umrzyjSie(UniwersKancera & uniwers)
+{
+	mStan = NieZyje;
+	mCzasZycia = 0;
+	std::cout << "UNIERAM" << std::endl;
 }
 
 void KomoraKancera::ozyw(int i, int j, UniwersKancera & uniwers)
@@ -172,8 +204,10 @@ void KomoraKancera::ozywSie()
 		if (mStan == Zyje) {
 			mCisnienie[2] += 0.1;
 		}
-		else if (mStan == Puste)
+		else if (mStan == Puste) {
 			mStan = Zyje;
+			//std::cout << "Ozywiam\n";
+		}
 		else if (mStan == NieZyje){
 		}
 	}

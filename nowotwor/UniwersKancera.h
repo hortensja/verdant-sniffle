@@ -16,14 +16,19 @@ public:
 	void aktualizujUniwers();
 	KomoraKancera &wezKomore(int i, int j);
 	void zapiszDoPlikaPPM(std::string nazwa, int numer);
+	void zapiszDoPlikaTXT(std::string nzawa);
 	double liczPochodnaDrugiegoRzeduPoX(double I, double J, int t);
 	double liczPochodnaDrugiegoRzeduPoY(double I, double J, int t);
 
+	double wezLiczbeZywych();
 
 private:
 	KomoraKancera **mSwiat;
 	KomoraKancera **mNowySwiat;
 	static KomoraKancera zerowaKomora;
+
+	int mLiczbaZywych;
+	int mLiczbaMartwych;
 
 };
 
