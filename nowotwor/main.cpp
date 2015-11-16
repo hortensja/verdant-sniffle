@@ -2,9 +2,16 @@
 
 #include <iostream>
 #include <chrono>
+#include <random>
 
 #include "KomoraKancera.h"
 #include "UniwersKancera.h"
+
+
+std::mt19937 mt2;
+std::normal_distribution <double> fajnyRozkladPrawdopodobienstwa2(5, 2);
+std::uniform_int_distribution <int> mniejFajnyRozkladPrawdopodobienstwa2(0, rozmiar);
+
 
 int main() {
 
@@ -12,14 +19,22 @@ int main() {
 	std::cout << sizeof(UniwersKancera) << std::endl;
 	auto timeBefAll = std::chrono::high_resolution_clock::now();
 	auto timeAfterAll = std::chrono::high_resolution_clock::now();
-	KomoraKancera kkk(Zyje,0.3);
-	uniwers.ustawKomoreUniwersu(100, 100, kkk);
-	uniwers.ustawKomoreUniwersu(73, 10, kkk);
-	uniwers.ustawKomoreUniwersu(18, 122, kkk);
-	uniwers.ustawKomoreUniwersu(67, 145, kkk);
-	uniwers.ustawKomoreUniwersu(160, 8, kkk);
-	uniwers.ustawKomoreUniwersu(111, 189, kkk);
-	//while (1) 0;
+	KomoraKancera kkk(Zyje, 0.3);
+
+	double ileKomorekPoczatkowych = fajnyRozkladPrawdopodobienstwa2(mt2);
+	
+	for (int i = 0; i < ileKomorekPoczatkowych; i++) {
+
+		uniwers.ustawKomoreUniwersu(mniejFajnyRozkladPrawdopodobienstwa2(mt2), mniejFajnyRozkladPrawdopodobienstwa2(mt2), kkk);
+	}
+
+	//uniwers.ustawKomoreUniwersu(100, 100, kkk);
+	//uniwers.ustawKomoreUniwersu(73, 10, kkk);
+	//uniwers.ustawKomoreUniwersu(18, 122, kkk);
+	//uniwers.ustawKomoreUniwersu(67, 145, kkk);
+	//uniwers.ustawKomoreUniwersu(160, 8, kkk);
+	//uniwers.ustawKomoreUniwersu(111, 189, kkk);
+	////while (1) 0;
 	system("del yoloyolo.txt");
 	for (size_t i = 0; i < 100; i++)
 	{
